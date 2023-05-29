@@ -13,8 +13,22 @@ export default {
       return items.value.filter((item) => item.list === list)
     }
 
+    const startDrop = (event, item) => {
+      event.dataTransfer.dropEffect = 'move'
+      event.dataTransfer.effectAllowed = 'move'
+      event.dataTransfer.setData('itemID', item.id)
+    }
+
+    const onDrop = (event, list) => {
+      const itemID = event.dataTransfer.getData('itemID')
+      const item = items.value.find(item => item.id == itemID)
+      item.list = list
+    }
+
     return {
-       getList
+       getList,
+       startDrop,
+       onDrop
     }
   }
 }
@@ -23,8 +37,33 @@ export default {
 <template>
   <main>
     <h1>Vue 3 Drag N Drop</h1>
+
+    <div @drop="onDrop($event, 1)" @dragenter.prevent @dragover.prevent class="drop-zone">
+      <div @dragstart="startDrop($event, item)" draggable="true" v-for="item in getList(1)" :key="item.id" class="drag-el">{{ item.title }}</div>
+    </div>
+    <div @drop="onDrop($event, 2)" @dragenter.prevent @dragover.prevent class="drop-zone">
+      <div @dragstart="startDrop($event, item)" draggable="true" v-for="item in getList(2)" :key="item.id" class="drag-el">{{ item.title }}</div>
+    </div>
   </main>
 </template>
 
 <style scoped>
+main {
+  max-width: 40rem;
+  margin: auto;
+  text-align: center;
+}
+
+.drop-zone {
+  width: 50%;
+  margin: 50px auto;
+  background-color: rgb(199, 193, 193);
+  padding: 10px;
+}
+.drag-el {
+  background-color: brown;
+  padding: 5px;
+  margin: 10px;
+  color: white;
+}
 </style>
